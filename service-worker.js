@@ -1,7 +1,6 @@
 /* Cache do shell do PWA. Não armazena respostas privadas nem chamadas à API. */
 const CACHE_NAME = "hibrido-pwa-v1";
 const APP_SHELL = [
-  "./",
   "./Coach_Hibrido_IA_SQLite_CORRIGIDO.html",
   "./supabase-config.js",
   "./supabase-auth.js",
