@@ -26,7 +26,7 @@
     <div style="color:#b8f36b;font-size:11px;font-weight:800;letter-spacing:1.5px">PAINEL HÍBRIDO</div>
     <h1>Entre na sua conta</h1>
     <p>Seus registros locais serão preservados. A sincronização só começa depois da autenticação e da confirmação de como tratar os dados.</p>
-    <div id="authConfigWarning" hidden style="border:1px solid #6b572b;padding:12px;border-radius:10px;color:#e8d8a8">Falta configurar <code>supabase-config.js</code> com a API URL e a Publishable key do projeto. Nunca use a Secret key.</div>
+    <div id="authConfigWarning" hidden style="border:1px solid #6b572b;padding:12px;border-radius:10px;color:#e8d8a8">Falta configurar <code>supabase-config.js</code> com a API URL e a Publishable key do projeto. Nunca use a Secret key.<br><button id="continueLocal" class="primary">Continuar no modo local por enquanto</button></div>
     <div id="authFields">
       <label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" required>
       <label for="authPassword">Senha (mínimo 8 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
@@ -48,7 +48,9 @@
   if (!configReady || !window.supabase) {
     $("authConfigWarning").hidden = false;
     $("authFields").hidden = true;
-    status("Configuração pendente. Preencha supabase-config.js e abra novamente o painel.");
+    status("Configuração pendente. Preencha supabase-config.js para ativar login e nuvem, ou continue usando o armazenamento local.");
+    const localButton = $("continueLocal");
+    if (localButton) localButton.onclick = () => { document.body.classList.remove("auth-locked"); gate.style.display = "none"; };
     return;
   }
 
