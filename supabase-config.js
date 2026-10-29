@@ -2,6 +2,6 @@
 // Preencha com Project URL e Publishable key do seu projeto.
 // NUNCA coloque uma Secret key / service_role neste arquivo.
 window.SUPABASE_CONFIG = {
-  url: "COLE_AQUI_SUA_API_URL",
-  publishableKey: "COLE_AQUI_SUA_PUBLISHABLE_KEY"
+  url: "https://dlbtohhehtlrllqvafoa.supabase.co/rest/v1/",
+  publishableKey: "sb_publishable_crlW0GCMqaWrUON0BirmWw_SFFAvDhk"
 };
