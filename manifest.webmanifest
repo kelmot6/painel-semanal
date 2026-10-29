@@ -1,0 +1,19 @@
+{
+  "name": "Híbrido — Painel de Treino",
+  "short_name": "Híbrido",
+  "description": "Painel pessoal para acompanhar musculação, corrida e recuperação.",
+  "lang": "pt-BR",
+  "start_url": "./Coach_Hibrido_IA_SQLite_CORRIGIDO.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b100f",
+  "theme_color": "#101a17",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
