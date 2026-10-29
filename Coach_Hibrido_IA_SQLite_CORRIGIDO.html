@@ -24,7 +24,7 @@
 @media(max-width:520px){.routine-week-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.routine-day{padding:8px}.routine-occurrence{padding:6px}}
 
 
-</style></head><body><div class="wrap">
+</style><style>.auth-locked .wrap{display:none!important}</style></head><body class="auth-locked"><div class="wrap">
 <header class="top"><div class="brand"><div class="logo">H+</div><div><h1>HÍBRIDO <span style="color:var(--accent)">/ PAINEL</span></h1><p>Musculação · Corrida · Recuperação</p></div></div><div class="actions"><button class="btn" id="exportBtn">Exportar dados</button><button class="btn" id="importBtn">Importar backup</button><input id="importFile" type="file" accept="application/json,.json" class="hidden"><button class="btn danger" id="resetBtn">Limpar dados</button></div></header>
 <nav class="app-nav" aria-label="Navegação principal">
 <button class="nav-item active" data-tab="inicio"><span>⌂</span><small>Início</small></button>
@@ -86,6 +86,9 @@
 </section>
 <div class="footer">Painel pessoal de acompanhamento · No aplicativo desktop, os dados são persistidos em banco SQLite local; exporte backups regularmente. Este painel não substitui avaliação de profissional de Educação Física ou saúde.</div></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+<script src="./supabase-auth.js"></script>
 <script>
 (()=>{
 const EXERCISES=[
