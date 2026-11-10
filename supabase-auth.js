@@ -17,6 +17,9 @@
     #authGate button.primary { background:#b8f36b; color:#15200f; border-color:#b8f36b; }
     #authGate .status { white-space:pre-wrap; margin-top:14px; color:#b8f36b; }
     #authGate .choices { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    #authGate .mode-switch { display:flex; gap:8px; margin:16px 0 4px; }
+    #authGate .mode-switch button { flex:1; margin:0; }
+    #authGate .mode-switch button[aria-pressed="true"] { border-color:#b8f36b; color:#b8f36b; }
   `;
   document.head.appendChild(style);
   document.body.classList.add("auth-locked");
@@ -28,9 +31,11 @@
     <p>Seus registros locais serão preservados. A sincronização só começa depois da autenticação e da confirmação de como tratar os dados.</p>
     <div id="authConfigWarning" hidden style="border:1px solid #6b572b;padding:12px;border-radius:10px;color:#e8d8a8">Falta configurar <code>supabase-config.js</code> com a API URL e a Publishable key do projeto. Nunca use a Secret key.<br><button id="continueLocal" class="primary">Continuar no modo local por enquanto</button></div>
     <div id="authFields">
+      <div class="mode-switch"><button id="modeLogin" type="button" class="primary" aria-pressed="true">Entrar</button><button id="modeSignup" type="button" aria-pressed="false">Criar conta</button></div>
+      <p id="authModeHelp">Entre com seu e-mail e senha cadastrados.</p>
       <label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" required>
       <label for="authPassword">Senha (mínimo 8 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
-      <div><button class="primary" id="authLogin">Entrar</button><button id="authSignup">Criar conta</button></div>
+      <div><button class="primary" id="authSubmit">Entrar</button></div>
       <button id="authReset">Esqueci a senha</button>
     </div>
     <div id="syncChoices" hidden>
@@ -50,7 +55,7 @@
     $("authFields").hidden = true;
     status("Configuração pendente. Preencha supabase-config.js para ativar login e nuvem, ou continue usando o armazenamento local.");
     const localButton = $("continueLocal");
-    if (localButton) localButton.onclick = () => { document.body.classList.remove("auth-locked"); gate.style.display = "none"; };
+    if (localButton) localButton.onclick = () => { document.body.classList.remove("auth-locked"); gate.style.display = "none"; logoutButton.hidden=false; };
     return;
   }
 
@@ -58,6 +63,9 @@
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
   const DATA_KEYS = ["hibrido_dashboard_v1", "hibrido_routine_study_v1"];
+  let authMode="login";
+  const setMode=mode=>{authMode=mode;$("modeLogin").classList.toggle("primary",mode==="login");$("modeSignup").classList.toggle("primary",mode==="signup");$("modeLogin").setAttribute("aria-pressed",String(mode==="login"));$("modeSignup").setAttribute("aria-pressed",String(mode==="signup"));$("authSubmit").textContent=mode==="login"?"Entrar":"Criar minha conta";$("authPassword").autocomplete=mode==="login"?"current-password":"new-password";$("authModeHelp").textContent=mode==="login"?"Entre com seu e-mail e senha cadastrados.":"Use um e-mail acessível. Depois do cadastro, confirme a mensagem recebida e então entre.";status("");};
+  $("modeLogin").onclick=()=>setMode("login");$("modeSignup").onclick=()=>setMode("signup");
   let activeUser = null, syncing = false, pendingTimer = null;
 
   function readLocal() {
@@ -145,6 +153,7 @@
     try {
       const ready = await chooseData();
       if (ready) {
+        logoutButton.hidden=false;
         document.body.classList.remove("auth-locked");
         gate.style.display = "none";
       }
@@ -153,23 +162,7 @@
       $("authFields").hidden = false;
     }
   }
-  $("authLogin").onclick = async () => {
-    const email = $("authEmail").value.trim(), password = $("authPassword").value;
-    if (!email || !password) return status("Informe e-mail e senha.");
-    status("Entrando…");
-    const { data, error } = await client.auth.signInWithPassword({ email, password });
-    if (error) return status(error.message);
-    await finishLogin(data.user);
-  };
-  $("authSignup").onclick = async () => {
-    const email = $("authEmail").value.trim(), password = $("authPassword").value;
-    if (!email || password.length < 8) return status("Informe um e-mail válido e uma senha com pelo menos 8 caracteres.");
-    status("Criando conta…");
-    const { data, error } = await client.auth.signUp({ email, password });
-    if (error) return status(error.message);
-    if (data.session && data.user) await finishLogin(data.user);
-    else status("Cadastro iniciado. Confira seu e-mail para confirmar a conta e depois entre.");
-  };
+  $("authSubmit").onclick=async()=>{const email=$("authEmail").value.trim(),password=$("authPassword").value;if(!email||!password)return status("Informe e-mail e senha.");if(authMode==="signup"&&password.length<8)return status("A senha precisa ter pelo menos 8 caracteres.");const b=$("authSubmit");b.disabled=true;try{if(authMode==="login"){status("Entrando…");const {data,error}=await client.auth.signInWithPassword({email,password});if(error)return status(error.message);await finishLogin(data.user);}else{status("Criando conta…");const {data,error}=await client.auth.signUp({email,password});if(error)return status(error.message);if(data.session&&data.user)await finishLogin(data.user);else status("Cadastro recebido. Abra o e-mail de confirmação enviado pelo Supabase. Depois de confirmar, volte e entre com a mesma senha.");}}finally{b.disabled=false;}};
   $("authReset").onclick = async () => {
     const email = $("authEmail").value.trim();
     if (!email) return status("Digite seu e-mail para receber o link de redefinição.");
@@ -194,6 +187,9 @@
       status("Dados da nuvem carregados neste dispositivo.");
     } catch (e) { status("Falha ao carregar dados da nuvem. " + (e.message || "")); }
   };
+  const logoutButton=document.createElement("button");logoutButton.className="btn danger";logoutButton.textContent="Sair da conta";logoutButton.hidden=true;document.querySelector(".top .actions")?.appendChild(logoutButton);
+  logoutButton.onclick=async()=>{if(!confirm("Deseja sair desta conta neste dispositivo? Os dados locais serão mantidos."))return;const {error}=await client.auth.signOut();if(error)return status("Não foi possível sair: "+error.message);activeUser=null;document.body.classList.add("auth-locked");gate.style.display="grid";$("authFields").hidden=false;$("syncChoices").hidden=true;logoutButton.hidden=true;setMode("login");status("Você saiu da conta. Os dados locais foram mantidos.");};
+  client.auth.onAuthStateChange((_event,session)=>{logoutButton.hidden=!session;});
   client.auth.getSession().then(({ data, error }) => {
     if (error) return status(error.message);
     if (data.session) finishLogin(data.session.user);
