@@ -25,7 +25,7 @@
 
 
 </style><style>.auth-locked .wrap{display:none!important}</style></head><body class="auth-locked"><div class="wrap">
-<header class="top"><div class="brand"><div class="logo">H+</div><div><h1>HÍBRIDO <span style="color:var(--accent)">/ PAINEL</span></h1><p>Musculação · Corrida · Recuperação</p></div></div><div class="actions"><button class="btn" id="installAppBtn" hidden>Instalar aplicativo</button><button class="btn" id="exportBtn">Exportar dados</button><button class="btn" id="importBtn">Importar backup</button><input id="importFile" type="file" accept="application/json,.json" class="hidden"><button class="btn danger" id="resetBtn">Limpar dados</button></div></header>
+<header class="top"><div class="brand"><div class="logo">H+</div><div><h1>HÍBRIDO <span style="color:var(--accent)">/ PAINEL</span></h1><p>Musculação · Corrida · Recuperação</p></div></div><div class="actions"><button class="btn" id="installAppBtn">Instalar aplicativo</button><button class="btn" id="exportBtn">Exportar dados</button><button class="btn" id="importBtn">Importar backup</button><input id="importFile" type="file" accept="application/json,.json" class="hidden"><button class="btn danger" id="resetBtn">Limpar dados</button></div></header>
 <nav class="app-nav" aria-label="Navegação principal">
 <button class="nav-item active" data-tab="inicio"><span>⌂</span><small>Início</small></button>
 <button class="nav-item" data-tab="sessao"><span>▣</span><small>Sessão</small></button>
@@ -239,6 +239,6 @@ showTab('inicio');
 </script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load",()=>{navigator.serviceWorker.register("./service-worker.js").catch(err=>console.warn("PWA: não foi possível registrar o service worker.",err));}); }
-let pendingInstall=null;const installBtn=document.getElementById("installAppBtn");window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pendingInstall=e;installBtn.hidden=false;});installBtn?.addEventListener("click",async()=>{if(!pendingInstall){alert("Abra o menu do navegador e procure por Instalar aplicativo ou Adicionar à tela inicial.");return;}pendingInstall.prompt();await pendingInstall.userChoice;pendingInstall=null;installBtn.hidden=true;});window.addEventListener("appinstalled",()=>{pendingInstall=null;if(installBtn)installBtn.hidden=true;});
+let pendingInstall=null;const installBtn=document.getElementById("installAppBtn");window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();pendingInstall=e;installBtn.hidden=false;});installBtn?.addEventListener("click",async()=>{if(!pendingInstall){alert("Abra o menu do navegador e procure por Instalar aplicativo ou Adicionar à tela inicial.");return;}pendingInstall.prompt();await pendingInstall.userChoice;pendingInstall=null;installBtn.hidden=true;});window.addEventListener("appinstalled",()=>{pendingInstall=null;if(installBtn){installBtn.textContent="Aplicativo instalado";installBtn.disabled=true;}});
 </script>
 </body></html>
